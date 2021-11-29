@@ -1,0 +1,131 @@
+tags:
+  - name: humans
+    description: humans API
+
+paths:
+  # [GET] humans
+  /humans:
+    get:
+      tags:
+        - humans
+      summary: Find All Humans
+      responses:
+        200:
+          description: "OK"
+        500:
+          description: "Server Error"
+
+    # [POST] users
+    post:
+      tags:
+        - humans
+      summary: Add Humans
+      parameters:
+        - name: body
+          in: body
+          description: human Data
+          required: true
+          schema:
+            $ref: "#/definitions/humans"
+      responses:
+        201:
+          description: "Created"
+        400:
+          description: "Bad Request"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+  # [GET] users/id
+  /humans/{id}:
+    get:
+      tags:
+        - humans
+      summary: Find Human By Id
+      parameters:
+        - name: id
+          in: path
+          description: Human Id
+          required: true
+      responses:
+        200:
+          description: "OK"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+    # [PUT] users/id
+    put:
+      tags:
+        - humans
+      summary: Update Human By Id
+      parameters:
+        - name: id
+          in: path
+          description: human Id
+          required: true
+        - name: body
+          in: body
+          description: human Data
+          required: true
+          schema:
+            $ref: "#/definitions/humans"
+      responses:
+        200:
+          description: "OK"
+        400:
+          description: "Bad Request"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+    # [DELETE] users/id
+    delete:
+      tags:
+        - humans
+      summary: Delete Human By Id
+      parameters:
+        - name: id
+          in: path
+          description: human Id
+          required: true
+      responses:
+        200:
+          description: "OK"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+# definitions
+definitions:
+  humans:
+    type: object
+    required:
+      - name
+      - description
+      - image
+      - external_url
+    properties:
+      id:
+        type: number
+        description: human Id
+      name:
+        type: string
+        description: human Name
+      description:
+        type: string
+        description: human Description
+      image:
+        type: string
+        description: human Image
+      external_url:
+        type: string
+        description: human External Url
+
+schemes:
+  - https
+  - http
