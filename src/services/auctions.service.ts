@@ -1,63 +1,76 @@
 import bcrypt from "bcrypt";
-import { CreateHumanDto } from "@dtos/humans.dto";
+import { CreateAuctionDto } from "@dtos/auctions.dto";
+import { CreateBidDto } from "@dtos/bids.dto";
 import { HttpException } from "@exceptions/HttpException";
 import { Auction } from "@interfaces/auctions.interface";
+import { Bid } from "@interfaces/bids.interface";
 import auctionModel from "@models/auctions.model";
 import { isEmpty } from "@utils/util";
 
 class AuctionService {
   public auctions = auctionModel;
 
-  public async findAllHuman(): Promise<Auction[]> {
+  public async findAllAuction(): Promise<Auction[]> {
     const auctions: Auction[] = await this.auctions.find();
     return auctions;
   }
 
-  public async findHumanById(humanId: string): Promise<Human> {
-    if (isEmpty(humanId)) throw new HttpException(400, "You're not humanId");
+  public async findAuctionById(auctionId: string): Promise<Auction> {
+    if (isEmpty(auctionId)) throw new HttpException(400, "You're not humanId");
 
-    const findHuman: Human = await this.humans.findOne({ _id: humanId });
-    if (!findHuman) throw new HttpException(409, "You're not human");
+    const findAuction: Auction = await this.auctions.findOne({ _id: auctionId });
+    if (!findAuction) throw new HttpException(409, "You're not human");
 
-    return findHuman;
+    return findAuction;
   }
 
-  public async createHuman(humanData: CreateHumanDto): Promise<Human> {
-    if (isEmpty(humanData))
-      throw new HttpException(400, "You're not humanData");
+  public async findAuctionByTokenId(tokenId: string): Promise<Auction> {
+    if (isEmpty(tokenId)) throw new HttpException(400, "You're not humanId");
 
-    const createHumanData: Human = await this.humans.create({
-      _id: humanData.id,
-      ...humanData,
+    const findAuction: Auction = await this.auctions.findOne({ tokenId: tokenId });
+    if (!findAuction) throw new HttpException(409, "You're not human");
+
+    return findAuction;
+  }
+
+  public async createAuction(auctionData: CreateAuctionDto): Promise<Auction> {
+    if (isEmpty(auctionData))
+      throw new HttpException(400, "You're not auctionData");
+
+    const createAuctionData: Auction = await this.auctions.create({
+      ...auctionData,
     });
 
-    return createHumanData;
+    return createAuctionData;
   }
 
-  public async updateHuman(
-    humanId: string,
-    humanData: CreateHumanDto
-  ): Promise<Human> {
-    if (isEmpty(humanData))
+  public async createBid(tokenId: string, bidData: CreateBidDto): Promise<Bid> {
+    if (isEmpty(bidData))
+      throw new HttpException(400, "You're not bidData");
+    
+    const findAuction: Auction = await this.findAuctionByTokenId(tokenId);
+    const length = findAuction.bids.push(bidData);
+
+    return findAuction.bids[length - 1];
+  }
+
+  public async updateAuction(
+    auctionId: string,
+    auctionData: CreateAuctionDto
+  ): Promise<Auction> {
+    if (isEmpty(auctionData))
       throw new HttpException(400, "You're not humanData");
 
-    const updateHumanById: Human = await this.humans.findByIdAndUpdate(
-      humanId,
+    const updateAuctionById: Auction = await this.auctions.findByIdAndUpdate(
+      auctionId,
       {
-        ...humanData,
+        ...auctionData,
       }
     );
-    if (!updateHumanById) throw new HttpException(409, "You're not human");
+    if (!updateAuctionById) throw new HttpException(409, "You're not human");
 
-    return updateHumanById;
-  }
-
-  public async deleteHuman(humanId: string): Promise<Human> {
-    const deleteHumanById: Human = await this.humans.findByIdAndDelete(humanId);
-    if (!deleteHumanById) throw new HttpException(409, "You're not human");
-
-    return deleteHumanById;
+    return updateAuctionById;
   }
 }
 
-export default HumanService;
+export default AuctionService;
