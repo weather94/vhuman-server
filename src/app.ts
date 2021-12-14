@@ -15,7 +15,12 @@ import { dbConnection } from "@databases";
 import { Routes } from "@interfaces/routes.interface";
 import errorMiddleware from "@middlewares/error.middleware";
 import { logger, stream } from "@utils/logger";
+import Web3Listener from "web3.listener";
 
+import HumanABI from "@abis/Human.json";
+import HumanConverterABI from "@abis/HumanConverter.json";
+import HumanERC20ABI from "@abis/HumanERC20.json";
+import HumanERC20StakerABI from "@abis/HumanERC20Staker.json";
 class App {
   public app: express.Application;
   public port: string | number;
@@ -31,6 +36,8 @@ class App {
     this.initializeRoutes(routes);
     this.initializeSwagger();
     this.initializeErrorHandling();
+
+    this.initializeWeb3();
   }
 
   public listen() {
@@ -40,6 +47,37 @@ class App {
       logger.info(`🚀 App listening on the port ${this.port}`);
       logger.info(`=================================`);
     });
+  }
+
+  public initializeWeb3() {
+    new Web3Listener();
+    // let web3js = new Web3(
+    //   new Web3.providers.WebsocketProvider("ws://localhost:7545")
+    // );
+    // new Web3.providers.WebsocketProvider("wss://mainnet.infura.io/ws")
+    // const humanAddress = "0x69cD9841c6Aa81691f46b64A51E0f8b426035662";
+
+    // let humanContract = new web3js.eth.Contract(
+    //   HumanABI.abi as any,
+    //   humanAddress
+    // );
+    // let converterContract = new web3js.eth.Contract(
+    //   HumanConverterABI.abi as any,
+    //   humanAddress
+    // );
+    // let tokenContract = new web3js.eth.Contract(
+    //   HumanERC20ABI.abi as any,
+    //   humanAddress
+    // );
+    // let stakerContract = new web3js.eth.Contract(
+    //   HumanERC20StakerABI.abi as any,
+    //   humanAddress
+    // );
+
+    // humanContract.events.Mint().on("data", function (event) {
+    //   let data = event.returnValues;
+    //   console.log("a => ", data);
+    // });
   }
 
   public getServer() {
@@ -85,7 +123,12 @@ class App {
           description: "Example docs",
         },
       },
-      apis: ["swagger/users.yaml", "swagger/humans.yaml"],
+      apis: [
+        "swagger/users.yaml",
+        "swagger/tokens.yaml",
+        "swagger/humans.yaml",
+        "swagger/auctions.yaml",
+      ],
     };
 
     const specs = swaggerJSDoc(options);

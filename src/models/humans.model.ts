@@ -1,9 +1,43 @@
 import { model, Schema, Document } from "mongoose";
 import { Human } from "@interfaces/humans.interface";
 
+const requestSchema: Schema = new Schema({
+  client: {
+    type: String,
+    required: true,
+  },
+  converter: {
+    type: String,
+    required: true,
+  },
+  sourceUri: {
+    type: String,
+    required: true,
+  },
+  target: {
+    type: String,
+  },
+  resultUri: {
+    type: String,
+    required: true,
+  },
+  status: {
+    type: String,
+    required: true,
+  },
+  time: {
+    type: String,
+    required: true,
+  },
+});
+
 const humanSchema: Schema = new Schema({
-  _id: {
-    type: Number,
+  tokenId: {
+    type: String,
+    required: true,
+  },
+  owner: {
+    type: String,
     required: true,
   },
   name: {
@@ -12,15 +46,28 @@ const humanSchema: Schema = new Schema({
   },
   description: {
     type: String,
-    required: true,
   },
   external_url: {
     type: String,
-    required: true,
   },
   image: {
     type: String,
     required: true,
+  },
+  staked: {
+    type: Boolean,
+  },
+  manual: {
+    type: Boolean,
+  },
+  fee: {
+    type: String,
+  },
+  balance: {
+    type: String,
+  },
+  requests: {
+    type: [requestSchema],
   },
 });
 

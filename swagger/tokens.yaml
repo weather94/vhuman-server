@@ -1,0 +1,131 @@
+tags:
+  - name: tokens
+    description: tokens API
+
+paths:
+  # [GET] tokens
+  /tokens:
+    get:
+      tags:
+        - tokens
+      summary: Find All Tokens
+      responses:
+        200:
+          description: "OK"
+        500:
+          description: "Server Error"
+
+    # [POST] users
+    post:
+      tags:
+        - tokens
+      summary: Add Tokens
+      parameters:
+        - name: body
+          in: body
+          description: token Data
+          required: true
+          schema:
+            $ref: "#/definitions/tokens"
+      responses:
+        201:
+          description: "Created"
+        400:
+          description: "Bad Request"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+  # [GET] users/id
+  /tokens/{id}:
+    get:
+      tags:
+        - tokens
+      summary: Find Token By Id
+      parameters:
+        - name: id
+          in: path
+          description: Token Id
+          required: true
+      responses:
+        200:
+          description: "OK"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+    # [PUT] users/id
+    put:
+      tags:
+        - tokens
+      summary: Update Token By Id
+      parameters:
+        - name: id
+          in: path
+          description: token Id
+          required: true
+        - name: body
+          in: body
+          description: token Data
+          required: true
+          schema:
+            $ref: "#/definitions/tokens"
+      responses:
+        200:
+          description: "OK"
+        400:
+          description: "Bad Request"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+    # [DELETE] users/id
+    delete:
+      tags:
+        - tokens
+      summary: Delete Token By Id
+      parameters:
+        - name: id
+          in: path
+          description: token Id
+          required: true
+      responses:
+        200:
+          description: "OK"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+# definitions
+definitions:
+  tokens:
+    type: object
+    required:
+      - name
+      - description
+      - image
+      - external_url
+    properties:
+      id:
+        type: number
+        description: token Id
+      name:
+        type: string
+        description: token Name
+      description:
+        type: string
+        description: token Description
+      image:
+        type: string
+        description: token Image
+      external_url:
+        type: string
+        description: token External Url
+
+schemes:
+  - https
+  - http

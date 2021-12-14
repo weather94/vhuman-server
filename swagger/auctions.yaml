@@ -1,14 +1,14 @@
 tags:
-  - name: humans
-    description: humans API
+  - name: auctions
+    description: auctions API
 
 paths:
-  # [GET] humans
-  /humans:
+  # [GET] auctions
+  /auctions:
     get:
       tags:
-        - humans
-      summary: Find All Humans
+        - auctions
+      summary: Find All Auctions
       responses:
         200:
           description: "OK"
@@ -17,7 +17,7 @@ paths:
 
 # definitions
 definitions:
-  humans:
+  auctions:
     type: object
     required:
       - name
@@ -27,7 +27,7 @@ definitions:
     properties:
       id:
         type: number
-        description: token Id
+        description: auction Id
       name:
         type: string
         description: token Name

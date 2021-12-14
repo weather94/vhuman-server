@@ -1,8 +1,10 @@
-import { IsString, IsNumber } from "class-validator";
-
+import { IsBoolean, IsString, IsArray } from "class-validator";
+import { Request } from "@/interfaces/requests.interface";
 export class CreateHumanDto {
-  @IsNumber()
-  public id: number;
+  @IsString()
+  public tokenId: string;
+  @IsString()
+  public owner: string;
   @IsString()
   public name: string;
   @IsString()
@@ -11,4 +13,11 @@ export class CreateHumanDto {
   public external_url: string;
   @IsString()
   public image: string;
+  @IsArray()
+  public requests: Request[];
+  @IsBoolean()
+  public staked: boolean;
+  public manual: boolean;
+  public fee: string;
+  public balance: string;
 }
