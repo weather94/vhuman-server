@@ -20,4 +20,5 @@ export class CreateHumanDto {
   public manual: boolean;
   public fee: string;
   public balance: string;
+  public total: string;
 }

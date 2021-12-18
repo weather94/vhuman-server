@@ -112,7 +112,7 @@ class Web3Listener implements IWeb3Listener {
       humanDto.staked = true;
       humanDto.fee = data.fee;
       humanDto.balance = "0";
-      humanDto.manual = data.isManual;
+      humanDto.manual = data.manual;
       this.humanService.updateHumanByTokenId(data.tokenId, humanDto);
       console.log("web3.converterContract.events.Stake() => ", data);
     });
@@ -132,24 +132,66 @@ class Web3Listener implements IWeb3Listener {
       let data = event.returnValues;
       console.log("web3.converterContract.events.AddRequest() => ", data);
       const requestDto = new CreateRequestDto();
+      requestDto.requestId = data.requestId;
       requestDto.client = data.request.client;
       requestDto.converter = data.request.converter;
-      requestDto.humanNumber = data.request.humanNumber;
+      requestDto.target = data.request.humanNumber;
       requestDto.sourceUri = data.request.sourceUri;
       requestDto.status = data.request.status;
+      requestDto.time = data.request.date;
       this.humanService.createRequest(data.request.tokenId, requestDto);
     });
 
     this.converterContract.events.Use().on("data", (event) => {
       let data = event.returnValues;
       console.log("web3.converterContract.events.Use() => ", data);
-      // const humanDto = new CreateHumanDto();
-      // humanDto.staked = false;
-      // humanDto.fee = "0";
-      // humanDto.balance = "0";
-      // humanDto.manual = false;
-      // console.log("web3.converterContract.events.Unstake() => ", data);
-      this.humanService.addBalance(data.tokenId, data.balance);
+    });
+
+    this.converterContract.events.Withdraw().on("data", (event) => {
+      let data = event.returnValues;
+      this.humanService.subBalance(data.tokenId, data.balance);
+    });
+
+    this.converterContract.events.ConvertAllow().on("data", (event) => {
+      let data = event.returnValues;
+      console.log("web3.converterContract.events.ConvertAllow() => ", data);
+      this.humanService.updateRequest(data.request.tokenId, data.requestId, {
+        allowed: true,
+      });
+    });
+
+    this.converterContract.events.ConvertStart().on("data", (event) => {
+      let data = event.returnValues;
+      console.log("web3.converterContract.events.ConvertStart() => ", data);
+      this.humanService.updateRequest(data.request.tokenId, data.requestId, {
+        status: data.request.status,
+      });
+    });
+
+    this.converterContract.events.ConvertSuccess().on("data", (event) => {
+      let data = event.returnValues;
+      console.log("web3.converterContract.events.ConvertSuccess() => ", data);
+      this.humanService.updateRequest(data.request.tokenId, data.requestId, {
+        status: data.request.status,
+        resultUri: data.request.resultUri,
+      });
+    });
+
+    this.converterContract.events.ConvertConfirm().on("data", (event) => {
+      let data = event.returnValues;
+      console.log("web3.converterContract.events.ConvertConfirm() => ", data);
+      this.humanService.updateRequest(data.request.tokenId, data.requestId, {
+        status: data.request.status,
+      });
+      this.humanService.addBalance(data.request.tokenId);
+    });
+
+    this.converterContract.events.ConvertComplain().on("data", (event) => {
+      let data = event.returnValues;
+      console.log("web3.converterContract.events.ConvertComplain() => ", data);
+      this.humanService.updateRequest(data.request.tokenId, data.requestId, {
+        status: data.request.status,
+      });
     });
   }
 }

@@ -1,7 +1,10 @@
 import { model, Schema, Document } from "mongoose";
 import { Human } from "@interfaces/humans.interface";
-
 const requestSchema: Schema = new Schema({
+  requestId: {
+    type: String,
+    required: true,
+  },
   client: {
     type: String,
     required: true,
@@ -16,10 +19,10 @@ const requestSchema: Schema = new Schema({
   },
   target: {
     type: String,
+    // required: true,
   },
   resultUri: {
     type: String,
-    required: true,
   },
   status: {
     type: String,
@@ -27,6 +30,10 @@ const requestSchema: Schema = new Schema({
   },
   time: {
     type: String,
+    required: true,
+  },
+  allowed: {
+    type: Boolean,
     required: true,
   },
 });
@@ -64,6 +71,9 @@ const humanSchema: Schema = new Schema({
     type: String,
   },
   balance: {
+    type: String,
+  },
+  total: {
     type: String,
   },
   requests: {

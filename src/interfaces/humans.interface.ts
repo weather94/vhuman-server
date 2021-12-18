@@ -13,5 +13,6 @@ export interface Human {
   manual: boolean;
   fee: string;
   balance: string;
+  total: string;
   requests: [Request];
 }

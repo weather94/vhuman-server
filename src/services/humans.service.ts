@@ -6,6 +6,7 @@ import { HttpException } from "@exceptions/HttpException";
 import { Human } from "@interfaces/humans.interface";
 import humanModel from "@models/humans.model";
 import { isEmpty } from "@utils/util";
+import BN from "bn.js";
 
 class HumanService {
   public humans = humanModel;
@@ -40,14 +41,11 @@ class HumanService {
     return humans;
   }
   public async createHuman(humanData: CreateHumanDto): Promise<Human> {
-    console.log("createHuman2");
     if (isEmpty(humanData))
       throw new HttpException(400, "You're not tokenData");
-    console.log("createHuman3");
     const createHumanData: Human = await this.humans.create({
       ...humanData,
     });
-    console.log("createHuman4");
     return createHumanData;
   }
 
@@ -58,6 +56,7 @@ class HumanService {
     if (isEmpty(requestData))
       throw new HttpException(400, "You're not bidData");
     const findHuman: Human = await this.findHumanByTokenId(tokenId);
+    requestData.allowed = !findHuman.manual;
     if (findHuman.requests) {
       findHuman.requests.push(requestData);
     } else {
@@ -65,6 +64,24 @@ class HumanService {
     }
     await this.humans.findByIdAndUpdate(findHuman._id, findHuman);
     return findHuman.requests[findHuman.requests.length - 1];
+  }
+
+  public async updateRequest(
+    tokenId: string,
+    requestId: string,
+    requestData: Object
+  ): Promise<Human> {
+    if (isEmpty(requestData))
+      throw new HttpException(400, "You're not bidData");
+    const findHuman = await this.humans.findOne({ tokenId });
+    const index = findHuman.requests.findIndex(
+      (item) => item.requestId === requestId
+    );
+    Object.keys(requestData).forEach((item) => {
+      findHuman.requests[index][item] = requestData[item];
+    });
+    findHuman.save();
+    return findHuman;
   }
 
   public async updateHumanByTokenId(
@@ -99,18 +116,25 @@ class HumanService {
     return updateHumanById;
   }
 
-  public async addBalance(tokenId: string, balance: string): Promise<Human> {
-    if (isEmpty(balance)) throw new HttpException(400, "You're not tokenData");
+  public async addBalance(tokenId: string): Promise<Human> {
+    if (isEmpty(tokenId)) throw new HttpException(400, "You're not tokenData");
 
-    const updateHumanById: Human = await this.humans.findOneAndUpdate(
-      { tokenId },
-      {
-        balance,
-      }
-    );
+    const human = await this.humans.findOne({ tokenId });
+    human.balance = new BN(human.balance).add(new BN(human.fee)).toString();
+    human.total = new BN(human.total).add(new BN(human.fee)).toString();
+    human.save();
+    if (!human) throw new HttpException(409, "You're not human");
+    return human;
+  }
 
-    if (!updateHumanById) throw new HttpException(409, "You're not human");
-    return updateHumanById;
+  public async subBalance(tokenId: string, balance: string): Promise<Human> {
+    if (isEmpty(tokenId)) throw new HttpException(400, "You're not tokenData");
+
+    const human = await this.humans.findOne({ tokenId });
+    human.balance = new BN(human.balance).sub(new BN(balance)).toString();
+    human.save();
+    if (!human) throw new HttpException(409, "You're not human");
+    return human;
   }
 
   public async deleteHuman(humanId: string): Promise<Human> {
